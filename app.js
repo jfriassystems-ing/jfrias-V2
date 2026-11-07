@@ -25,7 +25,7 @@ const titulos = {
 };
 
 function cargarCSS(pagina) {
-    // 1. Asegurar CSS Global (estilos.css en la raíz)
+    // 1. CSS Global
     if (!document.querySelector('link[href="estilos.css"]')) {
         const linkGlobal = document.createElement('link');
         linkGlobal.rel = 'stylesheet';
@@ -33,7 +33,7 @@ function cargarCSS(pagina) {
         document.head.appendChild(linkGlobal);
     }
 
-    // 2. Cargar CSS Específico desde la carpeta css/
+    // 2. CSS Específico
     const cssFile = cssEspecificos[pagina];
     if (!cssFile) return;
     
@@ -48,6 +48,9 @@ function cargarCSS(pagina) {
 }
 
 async function cargarPagina(nombrePagina) {
+    // 👇 GUARDAR EN LA URL
+    window.history.pushState({ page: nombrePagina }, '', `?page=${nombrePagina}`);
+
     const main = document.getElementById('contenido');
     main.innerHTML = '<div class="loader" style="text-align: center; padding: 3rem; color: var(--text-muted);">Cargando...</div>';
     
@@ -172,4 +175,9 @@ function conectarEventosInternos() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => { cargarPagina('home'); });
+// 👇 LEER LA URL AL INICIAR
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paginaInicial = urlParams.get('page') || 'home';
+    cargarPagina(paginaInicial);
+});
