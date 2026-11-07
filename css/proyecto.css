@@ -1,0 +1,177 @@
+/* ===== PROYECTO ===== */
+.seccion-interior {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 2rem 40px;
+    gap: 24px;
+    min-height: calc(100vh - 200px);
+    margin: 0 auto;
+}
+
+.titulo-hero {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 4.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -1.5px;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    padding: 1.2rem 2.5rem;
+    background: var(--bg-main);
+    border-radius: 16px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.titulo-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: conic-gradient(from 0deg, transparent 20%, #ec489a 40%, #8b5cf6 60%, transparent 80%);
+    animation: girarBorde 4s linear infinite;
+    z-index: -2;
+}
+
+.titulo-hero::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--bg-main);
+    border-radius: 14px;
+    z-index: -1;
+}
+
+@keyframes girarBorde {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.lead {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 680px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.pilares-proyecto {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.pilar {
+    flex: 1;
+    min-width: 280px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(4px);
+    border-radius: 24px;
+    padding: 1.8rem 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.pilar:hover {
+    transform: translateY(-6px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(236, 72, 153, 0.4);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+}
+
+.pilar:nth-child(1) h2 { border-left-color: #ec489a; }
+.pilar:nth-child(2) h2 { border-left-color: #8b5cf6; }
+.pilar:nth-child(3) h2 { border-left-color: #06b6d4; }
+
+.pilar h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    border-left: 4px solid;
+    padding-left: 0.8rem;
+    color: var(--text-main);
+}
+
+.pilar ul { list-style: none; padding-left: 0; margin: 0; }
+.pilar li { margin: 0.7rem 0; padding-left: 1.3rem; position: relative; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+.pilar li::before { content: "▹"; position: absolute; left: 0; font-size: 0.9rem; }
+.pilar:nth-child(1) li::before { color: #ec489a; }
+.pilar:nth-child(2) li::before { color: #8b5cf6; }
+.pilar:nth-child(3) li::before { color: #06b6d4; }
+
+/* ESTILOS PARA LOS PROYECTOS DEL CMS */
+.grid-proyectos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.proyecto-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.proyecto-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px -10px rgba(94, 191, 255, 0.3);
+}
+
+.proyecto-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.proyecto-img-placeholder {
+    width: 100%;
+    height: 180px;
+    background: rgba(94, 191, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--primary);
+}
+
+.proyecto-info { padding: 1.5rem; }
+.proyecto-info h3 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1.2rem; }
+.proyecto-info p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem; }
+
+.btn-video {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.3s;
+}
+
+.btn-video:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .titulo-hero { font-size: 2rem; padding: 1rem 1.5rem; }
+    .seccion-interior { padding: 10px 1rem 40px; max-width: 100%; }
+    .pilares-proyecto { flex-direction: column; gap: 1.5rem; }
+    .pilar { min-width: auto; width: 100%; }
+    .pilar h2 { font-size: 1.5rem; }
+}

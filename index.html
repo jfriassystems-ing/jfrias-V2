@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ing.JFrias | Sistemas Digitales & Desarrollo de Software en RD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ESCRITORIO ===== -->
+    <aside class="main-sidebar">
+        <div class="sidebar-logo-container">
+            <div class="neon-circle-logo">
+                <span class="logo-text">Ing.JFrias</span>
+            </div>
+        </div>
+        
+        <!-- NAVEGACIÓN PRINCIPAL ESCRITORIO -->
+        <nav class="sidebar-nav">
+            <a data-s="home" href="home"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a data-s="sobre-mi" href="sobre-mi"><i class="fa-regular fa-user"></i> Sobre Mí</a>
+           <a data-s="proyecto" href="proyecto"><i class="fa-solid fa-diagram-project"></i> Proyecto</a>
+            <a data-s="sistemas" href="sistemas"><i class="fa-solid fa-laptop-code"></i> Sistemas</a>
+            <a data-s="desarrollo" href="desarrollo"><i class="fa-solid fa-code"></i> Desarrollo</a>
+            <a data-s="bases-datos" href="bases-datos"><i class="fa-solid fa-database"></i> Bases de Datos</a>
+            <a data-s="contacto" href="contacto"><i class="fa-regular fa-envelope"></i> Contacto</a>
+        </nav>
+        
+        <a data-s="cotizar" href="cotizar" class="btn-cta-premium">
+            <i class="fa-solid fa-file-invoice-dollar"></i> Cotizar TU primera Página Web
+        </a>
+    </aside>
+
+    <!-- ===== SIDEBAR MÓVIL SUPERIOR ===== -->
+    <aside class="sidebar-top">
+        <div class="sidebar-logo-container">
+            <div class="neon-circle-logo">
+                <span class="logo-text">Ing.JFrias</span>
+            </div>
+        </div>
+    </aside>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ===== SIDEBAR MÓVIL INFERIOR ===== -->
+<aside class="sidebar-bottom">
+    <nav class="bar-container">
+        <a class="nav-item fixed" data-s="home" href="home"><i class="fa-solid fa-house"></i></a>
+
+        <div id="dynamic-group" class="dynamic-content">
+            <div class="group active" id="group-1">
+                <a data-s="sobre-mi" href="sobre-mi"><i class="fa-regular fa-user"></i></a>
+                <a data-s="proyecto" href="proyecto"><i class="fa-solid fa-diagram-project"></i></a>
+                <a data-s="sistemas" href="sistemas"><i class="fa-solid fa-laptop-code"></i></a>
+            </div>
+            <div class="group" id="group-2">
+                <a data-s="desarrollo" href="desarrollo"><i class="fa-solid fa-code"></i></a>
+                <a data-s="bases-datos" href="bases-datos"><i class="fa-solid fa-database"></i></a>
+                <a data-s="contacto" href="contacto"><i class="fa-regular fa-envelope"></i></a>
+                <a data-s="cotizar" href="cotizar"><i class="fa-solid fa-file-invoice-dollar"></i></a>
+            </div>
+        </div>
+
+        <button id="btn-toggle" class="nav-item toggle">
+            <i class="fa-solid fa-sync"></i>
+        </button>
+    </nav>
+</aside>
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <main id="contenido">
+        <div class="loader">Cargando...</div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

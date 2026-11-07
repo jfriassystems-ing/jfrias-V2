@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #0a0f1a 0%, #0d1424 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-container { background: #131c2e; border: 1px solid #1e293b; border-radius: 24px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .login-header { text-align: center; margin-bottom: 32px; }
+        .login-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+        .login-icon i { font-size: 28px; color: white; }
+        .login-header h1 { color: #f1f5f9; font-size: 24px; margin-bottom: 8px; }
+        .login-header p { color: #94a3b8; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: #94a3b8; font-size: 13px; margin-bottom: 8px; }
+        .form-group input { width: 100%; padding: 12px 16px; background: #0a0f1a; border: 1px solid #1e293b; border-radius: 12px; color: #f1f5f9; font-size: 14px; font-family: inherit; }
+        .form-group input:focus { outline: none; border-color: #3b82f6; }
+        .btn-login { width: 100%; padding: 12px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 12px; color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-login:hover { transform: translateY(-2px); opacity: 0.9; }
+        .error-message { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 10px; padding: 10px; margin-bottom: 20px; color: #ef4444; font-size: 13px; text-align: center; display: none; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-icon"><i class="fa-solid fa-user-cog"></i></div>
+            <h1>Panel Admin</h1>
+            <p>Ingresa tus credenciales</p>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        
+        <form id="login-form">
+            <div class="form-group">
+                <label><i class="fa-solid fa-envelope"></i> Correo electrónico</label>
+                <input type="email" id="email" required placeholder="admin@ejemplo.com">
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-lock"></i> Contraseña</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-login">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Iniciar Sesión
+            </button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { supabase } from '../js/supabase-client.js';
+        
+        const form = document.getElementById('login-form');
+        const errorDiv = document.getElementById('error-message');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = form.querySelector('.btn-login');
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+            btn.disabled = true;
+            errorDiv.style.display = 'none';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                window.location.href = 'panel-admin.html';
+            } catch (error) {
+                console.error(error);
+                errorDiv.textContent = '❌ Correo o contraseña incorrectos';
+                errorDiv.style.display = 'block';
+                btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Iniciar Sesión';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+/* ===== CONTACTO ===== */
+
+/* Contenedor principal de la sección */
+.seccion-interior {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;  /* ← Centrado vertical */
+    padding: 10px 0 40px;
+    gap: 24px;
+    min-height: calc(100vh - 200px);  /* ← Ocupa toda la altura disponible */
+    margin: 0 auto;  /* ← Centrado horizontal (seguro) */
+    }
+
+/* Título con borde giratorio */
+.titulo-hero {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 4.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -1.5px;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    padding: 1.2rem 2.5rem;
+    background: var(--bg-main);
+    border-radius: 16px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.titulo-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 20%,
+        #5ebfff 40%,
+        #a855f7 60%,
+        transparent 80%
+    );
+    animation: girarBorde 4s linear infinite;
+    z-index: -2;
+}
+
+.titulo-hero::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--bg-main);
+    border-radius: 14px;
+    z-index: -1;
+}
+
+/* Texto de descripción */
+.lead {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 680px;
+    line-height: 1.8;
+}
+
+/* Grupo de botones */
+.botones-grupo {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+/* Estilo base de botones */
+.btn {
+    display: inline-block;
+    padding: 0.85rem 2rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Botón primario (Correo) */
+.btn-primario {
+    background-color: rgba(94, 191, 255, 0.1);
+    color: var(--text-main);
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.btn-primario:hover {
+    background-color: var(--primary);
+    color: var(--bg-main);
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(94, 191, 255, 0.5);
+}
+
+/* Botón de WhatsApp Verde */
+.btn-whatsapp {
+    background-color: rgba(37, 211, 102, 0.1);
+    color: #25D366;
+    border: 1px solid #25D366;
+    box-shadow: 0 0 15px rgba(37, 211, 102, 0.15);
+}
+
+.btn-whatsapp:hover {
+    background-color: #25D366;
+    color: var(--bg-main);
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(37, 211, 102, 0.5);
+}
+
+/* ===== RESPONSIVE PARA MÓVIL ===== */
+@media (max-width: 768px) {
+    .titulo-hero {
+        font-size: 2rem;
+        padding: 1rem 1.5rem;
+    }
+    
+    .botones-grupo {
+        flex-direction: column;
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+

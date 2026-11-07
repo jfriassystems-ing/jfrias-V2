@@ -1,0 +1,217 @@
+/* ===== SOBRE MÍ ===== */
+
+/* Contenedor principal */
+.sobre-mi-wrap {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;  /* ← Centrado vertical */
+    padding: 10px 0 40px;
+    gap: 24px;
+    min-height: calc(100vh - 200px);  /* ← Ocupa toda la altura disponible */
+    margin: 0 auto;  /* ← Centrado horizontal (seguro) */
+    }
+
+/* Título de sección con borde giratorio */
+.titulo-seccion {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 4.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -1.5px;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    padding: 1.2rem 2.5rem;
+    background: var(--bg-main);
+    border-radius: 16px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.titulo-seccion::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 20%,
+        #5ebfff 40%,
+        #a855f7 60%,
+        transparent 80%
+    );
+    animation: girarBorde 4s linear infinite;
+    z-index: -2;
+}
+
+.titulo-seccion::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--bg-main);
+    border-radius: 14px;
+    z-index: -1;
+}
+
+/* Contenedor principal de la foto (marco exterior) */
+.foto-perfil {
+    width: 180px;
+    height: 180px;
+    margin: 20px auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+    padding: 6px;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Efecto hover del marco */
+.foto-perfil:hover {
+    transform: scale(1.08) rotate(3deg);
+    box-shadow: 0 15px 35px rgba(139, 92, 246, 0.6);
+}
+
+/* La imagen dentro del contenedor */
+.foto-perfil img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 4px solid #ffffff;
+    transition: transform 0.4s ease;
+}
+
+/* Efecto hover de la imagen */
+.foto-perfil:hover img {
+    transform: rotate(-3deg);
+}
+
+/* Tarjeta de perfil */
+.card-perfil {
+    width: 100%;
+    padding: 2rem;
+    background: rgba(40, 50, 70, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.card-perfil h2 {
+    margin-bottom: 0.4rem;
+    font-size: 1.3rem;
+}
+
+.subtitulo {
+    color: #a0aec0;
+    font-size: 0.88rem;
+    margin-bottom: 1.4rem;
+}
+
+/* Caja de biografía */
+.bio-box {
+    text-align: left;
+    margin-bottom: 1.4rem;
+    line-height: 1.7;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+}
+
+.bio-box ul {
+    list-style: none;
+    padding-left: 0.8rem;
+    margin-top: 0.6rem;
+}
+
+.bio-box ul li::before {
+    content: "›";
+    color: var(--primary);
+    margin-right: 8px;
+    font-weight: 700;
+}
+
+/* Grupo de botones de perfil */
+.botones-perfil {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Botón CV */
+.btn-cv {
+    background: #2563eb;
+    color: white;
+    padding: 0.65rem 1.4rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.88rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: background 0.3s;
+}
+
+.btn-cv:hover {
+    background: #1d4ed8;
+}
+
+/* Botón contactar */
+.btn-contactar {
+    background: transparent;
+    color: white;
+    padding: 0.65rem 1.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.88rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.3s;
+}
+
+.btn-contactar:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: white;
+}
+
+/* ===== RESPONSIVE PARA MÓVIL ===== */
+@media (max-width: 768px) {
+    .titulo-seccion {
+        font-size: 2rem;
+        padding: 1rem 1.5rem;
+    }
+    
+    .sobre-mi-wrap {
+        width: 100%;
+    }
+    
+    .foto-perfil {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .card-perfil {
+        padding: 1.5rem;
+    }
+    
+    .botones-perfil {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-cv, .btn-contactar {
+        width: 100%;
+        text-align: center;
+    }
+}
