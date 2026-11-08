@@ -1,4 +1,4 @@
-// js/Frm-cotizar.js
+// js/Frm-cotizar.js - OPTIMIZADO
 import { insertTicket } from './supabase-client.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const ticketNumeroSpan = document.getElementById('ticketNumero');
     const btnCerrar = document.getElementById('btnCerrarMensaje');
     const btnNueva = document.getElementById('btnNuevaCotizacion');
+
+    if (!form) return;
 
     function generarCodigoTicket() {
         const fecha = new Date();
@@ -18,21 +20,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function cerrarMensaje() {
-        if(mensajeExito) mensajeExito.style.display = 'none';
-        if(form) {
+        if (mensajeExito) mensajeExito.style.display = 'none';
+        if (form) {
             form.style.display = 'block';
-            form.reset(); 
+            form.reset();
         }
     }
 
     if (btnCerrar) btnCerrar.addEventListener('click', cerrarMensaje);
     if (btnNueva) btnNueva.addEventListener('click', cerrarMensaje);
 
-    if (!form) return;
+    // Debounce para evitar doble envío
+    let enviando = false;
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        if (enviando) return;
+        enviando = true;
+
         const codigoTicket = generarCodigoTicket();
         
         const ticketData = {
@@ -49,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!ticketData.nombre || !ticketData.email || !ticketData.tipo_proyecto || !ticketData.descripcion) {
             alert('Por favor, completa todos los campos obligatorios (*)');
+            enviando = false;
             return;
         }
 
@@ -58,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = true;
 
         try {
-            // Enviamos a Supabase
             await insertTicket(ticketData);
             
             ticketNumeroSpan.textContent = codigoTicket;
@@ -70,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             btn.innerHTML = originalText;
             btn.disabled = false;
+            enviando = false;
         }
     });
 });

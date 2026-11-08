@@ -23,6 +23,8 @@ body {
     background-color: var(--bg-main);
     color: var(--text-main);
     font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ===== SECCIONES (SPA) ===== */
@@ -50,6 +52,7 @@ body {
     padding: 2.5rem 1.2rem;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     z-index: 1000;
+    contain: layout style;
 }
 
 /* LOGO */
@@ -101,6 +104,7 @@ body {
     gap: 12px;
     transition: all 0.3s ease;
     border: 1px solid transparent;
+    will-change: background-color, border-color;
 }
 
 .sidebar-nav a i {
@@ -145,11 +149,7 @@ body {
 }
 
 /* ===== SIDEBAR MÓVIL ===== */
-.sidebar-top {
-    display: none;
-}
-
-.sidebar-bottom {
+.sidebar-top, .sidebar-bottom {
     display: none;
 }
 
@@ -162,6 +162,7 @@ body {
     align-items: flex-start;
     padding: 40px;
     min-height: 100vh;
+    contain: layout style;
 }
 
 .loader {
@@ -257,10 +258,11 @@ body {
     
     .sidebar-bottom a:hover,
     .sidebar-bottom a.activo {
-        background-color: rgba(94, 191, 255, 0.15);
+        background-color: rgba(94, 191, 255, 0.25);
         border-color: var(--primary);
         color: var(--primary);
         transform: translateY(-3px);
+        box-shadow: 0 0 12px rgba(94, 191, 255, 0.3);
     }
     
     #contenido {
@@ -280,47 +282,46 @@ body {
     }
 }
 
-
-
-.sidebar-bottom { background: #0a1120; padding: 10px; border-radius: 20px; }
-.bar-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-
-/* Estilo iconos */
-.nav-item { color: #00d4ff; font-size: 1.5rem; padding: 10px; }
-.dynamic-content { flex-grow: 1; display: flex; justify-content: center; }
-
-/* Lógica de grupos */
-.group { display: none; gap: 15px; }
-.group.active { display: flex; animation: fadeEffect 0.5s; }
-
-@keyframes fadeEffect { from { opacity: 0; } to { opacity: 1; } }
-
-/* Estilo botón cambio */
-.toggle { border: 1px solid #00d4ff; border-radius: 10px; cursor: pointer; background: transparent; }
-
-
-
-
-
-
-
-
-/* Agrega esto a estilos.css - Sección responsive móvil */
-
-.sidebar-bottom a.activo {
-    background-color: rgba(94, 191, 255, 0.25);
-    border-color: var(--primary);
-    color: var(--primary);
-    transform: translateY(-3px);
-    box-shadow: 0 0 12px rgba(94, 191, 255, 0.3);
+/* ===== ESTILOS BOTONES MÓVIL ===== */
+.sidebar-bottom { 
+    background: #0a1120; 
+    padding: 10px; 
+    border-radius: 20px; 
 }
-
-/* Asegura que todos los botones tengan cursor pointer */
-.sidebar-bottom a {
-    cursor: pointer;
+.bar-container { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    gap: 10px; 
 }
-
-/* Transición suave para el cambio de grupos */
-.group {
+.nav-item { 
+    color: #00d4ff; 
+    font-size: 1.5rem; 
+    padding: 10px; 
+}
+.dynamic-content { 
+    flex-grow: 1; 
+    display: flex; 
+    justify-content: center; 
+}
+.group { 
+    display: none; 
+    gap: 15px; 
     transition: all 0.3s ease;
+}
+.group.active { 
+    display: flex; 
+    animation: fadeEffect 0.5s; 
+}
+
+@keyframes fadeEffect { 
+    from { opacity: 0; } 
+    to { opacity: 1; } 
+}
+
+.toggle { 
+    border: 1px solid #00d4ff; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    background: transparent; 
 }

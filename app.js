@@ -1,3 +1,4 @@
+// app.js - VERSIÓN OPTIMIZADA CON CACHÉ
 import { obtenerConfigPagina } from './js/supabase-client.js';
 
 const archivos = {
@@ -24,8 +25,22 @@ const titulos = {
     'contacto': 'Contacto | ing.Jfrias', 'cotizar': 'Cotizar | ing.Jfrias'
 };
 
+// ===== CACHÉ EN MEMORIA =====
+const cache = {
+    html: {},      // HTML de páginas
+    css: {},       // CSS cargados
+    config: {},    // Config de Supabase
+    scripts: {}    // Scripts ejecutados
+};
+
+// Precarga de recursos en background
+const precargar = {
+    css: new Set(),
+    js: new Set()
+};
+
 function cargarCSS(pagina) {
-    // 1. CSS Global
+    // 1. CSS Global (solo una vez)
     if (!document.querySelector('link[href="estilos.css"]')) {
         const linkGlobal = document.createElement('link');
         linkGlobal.rel = 'stylesheet';
@@ -33,54 +48,83 @@ function cargarCSS(pagina) {
         document.head.appendChild(linkGlobal);
     }
 
-    // 2. CSS Específico
+    // 2. CSS Específico (evitar duplicados)
     const cssFile = cssEspecificos[pagina];
-    if (!cssFile) return;
-    
-    const linkExistente = document.querySelector(`link[data-page="${pagina}"]`);
-    if (linkExistente) linkExistente.remove();
+    if (!cssFile || cache.css[pagina]) return;
     
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = `css/${cssFile}`; 
+    link.href = `css/${cssFile}`;
     link.setAttribute('data-page', pagina);
+    
+    // Precargar para evitar flash de contenido sin estilo
+    link.onload = () => { cache.css[pagina] = true; };
     document.head.appendChild(link);
 }
 
 async function cargarPagina(nombrePagina) {
-    // 👇 GUARDAR EN LA URL
+    // Guardar en URL
     window.history.pushState({ page: nombrePagina }, '', `?page=${nombrePagina}`);
 
     const main = document.getElementById('contenido');
-    main.innerHTML = '<div class="loader" style="text-align: center; padding: 3rem; color: var(--text-muted);">Cargando...</div>';
-    
     const archivo = archivos[nombrePagina];
-    if (!archivo) return main.innerHTML = '<div class="error">Página no encontrada</div>';
     
+    if (!archivo) {
+        main.innerHTML = '<div class="error" style="text-align:center;padding:3rem;">Página no encontrada</div>';
+        return;
+    }
+
+    // Mostrar loader solo si no hay caché (evita parpadeo)
+    if (!cache.html[nombrePagina]) {
+        main.innerHTML = '<div class="loader" style="text-align:center;padding:3rem;color:var(--text-muted);">Cargando...</div>';
+    }
+
+    // Cargar CSS en paralelo (no bloquea)
     cargarCSS(nombrePagina);
-    
+
     try {
-        const response = await fetch(`page/${archivo}`);
-        if (!response.ok) throw new Error(`No se pudo cargar ${archivo}`);
-        let html = await response.text();
+        let html;
 
-        const config = await obtenerConfigPagina(nombrePagina);
+        // ===== USAR CACHÉ DE HTML =====
+        if (cache.html[nombrePagina]) {
+            html = cache.html[nombrePagina];
+        } else {
+            // Descargar HTML
+            const response = await fetch(`page/${archivo}`);
+            if (!response.ok) throw new Error(`No se pudo cargar ${archivo}`);
+            html = await response.text();
 
-        if (config && config.secciones && config.secciones.length > 0) {
-            config.secciones.forEach(sec => {
-                if (sec.tipo === 'texto' || sec.tipo === 'html') {
-                    const regex = new RegExp(`(<[^>]+data-cms="${sec.clave}"[^>]*>)(.*?)(</[^>]+>)`, 'gs');
-                    html = html.replace(regex, `$1${sec.valor}$3`);
-                } else if (sec.tipo === 'imagen') {
-                    const imgRegex = new RegExp(`<img([^>]+)data-cms="${sec.clave}"([^>]*)>`, 'g');
-                    html = html.replace(imgRegex, `<img$1 src="${sec.valor}"$2>`);
-                }
-            });
+            // Obtener config de Supabase (con caché)
+            let config;
+            if (cache.config[nombrePagina] !== undefined) {
+                config = cache.config[nombrePagina];
+            } else {
+                config = await obtenerConfigPagina(nombrePagina);
+                cache.config[nombrePagina] = config;
+            }
+
+            // Aplicar config CMS
+            if (config && config.secciones && config.secciones.length > 0) {
+                config.secciones.forEach(sec => {
+                    if (sec.tipo === 'texto' || sec.tipo === 'html') {
+                        const regex = new RegExp(`(<[^>]+data-cms="${sec.clave}"[^>]*>)(.*?)(</[^>]+>)`, 'gs');
+                        html = html.replace(regex, `$1${sec.valor}$3`);
+                    } else if (sec.tipo === 'imagen') {
+                        const imgRegex = new RegExp(`<img([^>]+)data-cms="${sec.clave}"([^>]*)>`, 'g');
+                        html = html.replace(imgRegex, `<img$1 src="${sec.valor}"$2>`);
+                    }
+                });
+            }
+
+            // Guardar en caché
+            cache.html[nombrePagina] = html;
         }
 
+        // Insertar HTML de una sola vez (más rápido que innerHTML = string)
         main.innerHTML = html;
         document.title = titulos[nombrePagina] || 'ing.Jfrias';
         
+        // Marcar activo
         document.querySelectorAll('[data-s]').forEach(link => {
             link.classList.toggle('activo', link.getAttribute('data-s') === nombrePagina);
         });
@@ -89,9 +133,57 @@ async function cargarPagina(nombrePagina) {
         ejecutarScriptEspecifico(nombrePagina);
         setTimeout(conectarBotonesCTA, 100);
 
+        // Precargar páginas relacionadas en background
+        precargarPaginasRelacionadas(nombrePagina);
+
     } catch (error) {
         console.error('Error:', error);
-        main.innerHTML = '<div class="error" style="text-align: center; padding: 3rem;">Error al cargar la página.</div>';
+        main.innerHTML = '<div class="error" style="text-align:center;padding:3rem;">Error al cargar la página.</div>';
+    }
+}
+
+// Precargar páginas que probablemente el usuario visite
+function precargarPaginasRelacionadas(paginaActual) {
+    const relaciones = {
+        'home': ['sobre-mi', 'proyecto', 'contacto'],
+        'sobre-mi': ['proyecto', 'contacto', 'sistemas'],
+        'sistemas': ['desarrollo', 'bases-datos', 'contacto'],
+        'desarrollo': ['bases-datos', 'proyecto', 'contacto'],
+        'bases-datos': ['desarrollo', 'proyecto', 'contacto'],
+        'proyecto': ['contacto', 'sobre-mi'],
+        'contacto': ['cotizar', 'home'],
+        'cotizar': ['contacto', 'home']
+    };
+
+    const paginas = relaciones[paginaActual] || [];
+    
+    // Usar requestIdleCallback para no bloquear
+    const precargar = () => {
+        paginas.forEach(pagina => {
+            if (!cache.html[pagina] && archivos[pagina]) {
+                fetch(`page/${archivos[pagina]}`)
+                    .then(r => r.text())
+                    .then(html => {
+                        cache.html[pagina] = html;
+                    })
+                    .catch(() => {});
+            }
+            
+            // Precargar CSS
+            if (!cache.css[pagina] && cssEspecificos[pagina]) {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.as = 'style';
+                link.href = `css/${cssEspecificos[pagina]}`;
+                document.head.appendChild(link);
+            }
+        });
+    };
+
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(precargar);
+    } else {
+        setTimeout(precargar, 2000);
     }
 }
 
@@ -103,18 +195,26 @@ function conectarBotonesCTA() {
 }
 
 function manejadorClickCta(e) {
-    e.preventDefault(); e.stopPropagation(); cargarPagina('cotizar');
+    e.preventDefault(); 
+    e.stopPropagation(); 
+    cargarPagina('cotizar');
 }
 
 function ejecutarScriptEspecifico(pagina) {
     const jsFile = jsFiles[pagina];
     if (!jsFile) return;
+    
+    // Evitar re-ejecutar scripts
+    if (cache.scripts[pagina]) return;
+    
     const scriptExistente = document.querySelector(`script[data-page="${pagina}"]`);
     if (scriptExistente) scriptExistente.remove();
+    
     const script = document.createElement('script');
     script.src = jsFile;
-    script.type = 'module'; 
+    script.type = 'module';
     script.setAttribute('data-page', pagina);
+    script.onload = () => { cache.scripts[pagina] = true; };
     document.body.appendChild(script);
 }
 
@@ -175,9 +275,16 @@ function conectarEventosInternos() {
     }
 }
 
-// 👇 LEER LA URL AL INICIAR
+// ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const paginaInicial = urlParams.get('page') || 'home';
     cargarPagina(paginaInicial);
+});
+
+// Manejar navegación con botón atrás/adelante
+window.addEventListener('popstate', (e) => {
+    if (e.state && e.state.page) {
+        cargarPagina(e.state.page);
+    }
 });
