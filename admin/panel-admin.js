@@ -1,4 +1,4 @@
-// panel-admin.js - VERSIÓN FINAL COMPLETA
+// panel-admin.js - VERSIÓN SUPABASE (sin /api/neon)
 import { supabase } from '../js/supabase-client.js';
 
 // ========== VARIABLES GLOBALES ==========
@@ -46,7 +46,7 @@ async function cerrarSesion() {
     window.location.href = 'login.html';
 }
 
-// ========== MÓDULO: TICKETS ==========
+// ========== TICKETS ==========
 async function cargarTickets() {
     const { data, error } = await supabase.from('tickets').select('*').order('created_at', { ascending: false });
     if (error) {
@@ -180,7 +180,7 @@ async function refreshData() {
     renderizarTabla();
 }
 
-// ========== MÓDULO: FACTURACIÓN ==========
+// ========== FACTURACIÓN ==========
 async function loadClientesFact() {
     const { data } = await supabase.from('clientes').select('*').order('id', { ascending: false });
     if (!data) return;
@@ -256,13 +256,13 @@ async function loadFacturasFact() {
     document.getElementById('fact-total-facturado').innerText = `$${totalFacturado.toFixed(2)}`;
 }
 
-// ========== MÓDULO: CMS ==========
+// ========== CMS ==========
 async function cargarEditorPagina(slug) {
     paginaActualCMS = slug;
     const editorDiv = document.getElementById('cms-editor');
     editorDiv.innerHTML = '<div class="loader">Cargando editor...</div>';
 
-    let { data: pagina, error } = await supabase.from('paginas').select('*').eq('slug', slug).maybeSingle();
+    let { data: pagina } = await supabase.from('paginas').select('*').eq('slug', slug).maybeSingle();
 
     if (!pagina) {
         const { data: nuevaPagina } = await supabase.from('paginas').insert([{ slug: slug, titulo: slug.toUpperCase() }]).select().single();
@@ -407,7 +407,7 @@ window.eliminarProyecto = async (id) => {
     mostrarToast('Proyecto eliminado');
 };
 
-// ========== LÓGICA DE FACTURAS ==========
+// ========== ITEMS FACTURA ==========
 function renderItemsFactura() {
     const tbody = document.getElementById('tabla-items-fact');
     if (!tbody) return;
@@ -429,9 +429,7 @@ function renderItemsFactura() {
                 <td>$${itbis.toFixed(2)}</td>
                 <td>$${total.toFixed(2)}</td>
                 <td>
-                    <button onclick="removeItemFact(${i})" style="background:#e74c3c; padding:4px 8px; border:none; border-radius:4px; color:white; cursor:pointer;">
-                        🗑️
-                    </button>
+                    <button onclick="removeItemFact(${i})" style="background:#e74c3c; padding:4px 8px; border:none; border-radius:4px; color:white; cursor:pointer;">🗑️</button>
                 </td>
             </tr>
         `;
@@ -441,10 +439,7 @@ function renderItemsFactura() {
         input.addEventListener('change', function() {
             const index = parseInt(this.dataset.index);
             const nuevaCantidad = parseInt(this.value) || 1;
-            if (nuevaCantidad < 1) {
-                this.value = 1;
-                return;
-            }
+            if (nuevaCantidad < 1) { this.value = 1; return; }
             const item = itemsFactura[index];
             if (item) {
                 item.cantidad = nuevaCantidad;
@@ -478,6 +473,7 @@ async function cargarServiciosParaSeleccionar() {
     `).join('');
 }
 
+// ========== EVENTOS ==========
 document.getElementById('check-itbis')?.addEventListener('change', renderItemsFactura);
 
 document.getElementById('btn-add-item')?.addEventListener('click', function() {
@@ -506,7 +502,7 @@ document.getElementById('tabla-items-seleccionar')?.addEventListener('change', f
                 return;
             }
             const itbis = precio * 0.18;
-            itemsFactura.push({ descripcion: nombre, cantidad: 1, precio_unitario: precio, subtotal: precio, itbis: itbis, total: precio + itbis, servicio_id: id });
+            itemsFactura.push({ descripcion: nombre, cantidad: 1, precio_unitario: precio, subtotal: precio, itbis, total: precio + itbis, servicio_id: id });
             mostrarToast(`✅ ${nombre} agregado`);
             checkbox.checked = false;
         }
@@ -568,6 +564,7 @@ document.getElementById('tabla-facturas-fact')?.addEventListener('change', async
     }
 });
 
+// ========== IMPRESIÓN ==========
 window.abrirPrintFactura = async function(facturaId) {
     try {
         const { data: facturaData } = await supabase.from('facturas').select('*, clientes(*)').eq('id', facturaId).single();

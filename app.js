@@ -280,7 +280,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const paginaInicial = urlParams.get('page') || 'home';
     cargarPagina(paginaInicial);
+
+    // Conectar toggle móvil (una sola vez, el sidebar no se recarga)
+    conectarToggleMovil();
 });
+
+// Manejar navegación con botón atrás/adelante
+window.addEventListener('popstate', (e) => {
+    if (e.state && e.state.page) {
+        cargarPagina(e.state.page);
+    }
+});
+
+// ===== TOGGLE MÓVIL =====
+function conectarToggleMovil() {
+    const toggleBtn = document.getElementById('btn-toggle');
+    if (!toggleBtn) {
+        console.warn('Botón toggle no encontrado');
+        return;
+    }
+
+    // Evitar duplicados
+    toggleBtn.removeEventListener('click', manejadorToggle);
+    toggleBtn.addEventListener('click', manejadorToggle);
+    console.log('Listener del toggle registrado');
+}
+
+function manejadorToggle(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const group1 = document.getElementById('group-1');
+    const group2 = document.getElementById('group-2');
+
+    if (!group1 || !group2) {
+        console.warn('No se encontraron los grupos del sidebar móvil');
+        return;
+    }
+
+    group1.classList.toggle('active');
+    group2.classList.toggle('active');
+
+    console.log('Toggle funcionando. Group1:', group1.classList.contains('active'), 'Group2:', group2.classList.contains('active'));
+}
 
 // Manejar navegación con botón atrás/adelante
 window.addEventListener('popstate', (e) => {

@@ -1,35 +1,59 @@
-// home.js - OPTIMIZADO
-document.addEventListener('DOMContentLoaded', () => {
-    // Animación de entrada con IntersectionObserver (más eficiente)
-    const techCards = document.querySelectorAll('.tech-card');
-    
-    if ('IntersectionObserver' in window && techCards.length > 0) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    const card = entry.target;
-                    setTimeout(() => {
-                        card.style.transition = 'all 0.5s ease';
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, index * 100);
-                    observer.unobserve(card);
-                }
-            });
-        }, { threshold: 0.1 });
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio | ing.Jfrias</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div id="sec-home" class="section active">
+        <div class="home-container">
+            <div class="hero-bloque">
+                <span class="badge" data-cms="home_badge">Diseño & Optimización Web Profesional</span>
+                <h1 class="titulo-hero" data-cms="home_titulo">Construimos la presencia digital que tu empresa necesita</h1>
+                <p class="lead" data-cms="home_lead">Sitios web de alta ingeniería, rápidos y seguros, diseñados para hacer destacar tu negocio en internet.</p>
 
-        techCards.forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            observer.observe(card);
-        });
-    } else {
-        // Fallback para navegadores antiguos
-        techCards.forEach(card => {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        });
-    }
+                <div class="cta-container">
+                    <a data-s="cotizar" href="?page=cotizar" class="btn-cta-premium">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Cotizar TU primera Página Web
+                    </a>
+                </div>
 
-    console.log('Home page loaded');
-});
+                <div class="botones-grupo">
+                    <a data-s="proyecto" href="?page=proyecto" class="btn btn-primario">Explorar Proyectos</a>
+                    <a data-s="contacto" href="?page=contacto" class="btn btn-outline">
+                        <i class="fa-regular fa-envelope"></i> Enviar Mensaje
+                    </a>
+                </div>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <span class="tech-etiqueta">SQL</span>
+                    <i class="fa-solid fa-database tech-icono"></i>
+                    <span class="tech-texto">Bases de Datos Relacionales</span>
+                </div>
+                <div class="tech-card">
+                    <span class="tech-etiqueta">Git</span>
+                    <i class="fa-solid fa-code-branch tech-icono"></i>
+                    <span class="tech-texto">Control de Versiones Profesional</span>
+                </div>
+            </div>
+
+            <div class="status-wrap">
+                <h2 class="status-titulo">Entorno de Trabajo Actual</h2>
+                <div class="status-banner">
+                    <div class="status-header">
+                        <div class="status-dot"></div>
+                        <span class="status-dominio">Dominio Activo: jfriassystems.do</span>
+                        <span class="status-pill">ONLINE</span>
+                    </div>
+                    <p class="status-desc">Repositorio centralizado en GitHub bajo la arquitectura modular <code>Workspace</code> para un despliegue ágil y limpio.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/home.js" type="module"></script>
+</body>
+</html>

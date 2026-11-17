@@ -1,21 +1,38 @@
-// proyecto.js - OPTIMIZADO
-import { supabase } from './supabase-client.js';
+// js/proyecto.js - OPTIMIZADO con soporte CMS
+import { supabase, obtenerConfigPagina } from './supabase-client.js';
 
 let proyectosCache = null;
 let cacheTimestamp = 0;
 const CACHE_TTL = 5 * 60 * 1000;
 
+async function aplicarCMS() {
+    try {
+        const config = await obtenerConfigPagina('proyecto');
+        if (!config || !config.secciones) return;
+
+        config.secciones.forEach(sec => {
+            if (sec.tipo === 'texto' || sec.tipo === 'html') {
+                const el = document.querySelector(`[data-cms="${sec.clave}"]`);
+                if (el) el.innerHTML = sec.valor;
+            } else if (sec.tipo === 'imagen') {
+                const img = document.querySelector(`img[data-cms="${sec.clave}"]`);
+                if (img) img.src = sec.valor;
+            }
+        });
+    } catch (err) {
+        console.warn('CMS no disponible para proyecto:', err.message);
+    }
+}
+
 async function cargarProyectos() {
     const grid = document.getElementById('grid-proyectos');
     if (!grid) return;
 
-    // Usar caché si está disponible
     if (proyectosCache && (Date.now() - cacheTimestamp < CACHE_TTL)) {
         renderizarProyectos(proyectosCache, grid);
         return;
     }
 
-    // Mostrar loader
     grid.innerHTML = '<p style="color: var(--text-muted); text-align: center; width: 100%;">Cargando proyectos...</p>';
 
     try {
@@ -48,7 +65,6 @@ function renderizarProyectos(data, grid) {
         return;
     }
 
-    // Usar DocumentFragment para mejor rendimiento
     const fragment = document.createDocumentFragment();
 
     data.forEach(p => {
@@ -92,4 +108,8 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-cargarProyectos();
+// Ejecutar al cargar
+document.addEventListener('DOMContentLoaded', async () => {
+    await aplicarCMS();
+    await cargarProyectos();
+});

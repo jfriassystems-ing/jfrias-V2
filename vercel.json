@@ -4,6 +4,16 @@
   "installCommand": "npm install",
   "outputDirectory": ".",
   "framework": null,
+  "rewrites": [
+    { "source": "/home", "destination": "/index.html" },
+    { "source": "/sobre-mi", "destination": "/index.html" },
+    { "source": "/sistemas", "destination": "/index.html" },
+    { "source": "/desarrollo", "destination": "/index.html" },
+    { "source": "/bases-datos", "destination": "/index.html" },
+    { "source": "/proyecto", "destination": "/index.html" },
+    { "source": "/contacto", "destination": "/index.html" },
+    { "source": "/cotizar", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/css/(.*)",
