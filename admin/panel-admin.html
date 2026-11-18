@@ -279,47 +279,42 @@
                 </div>
             </div>
 
-            <!-- CMS -->
+                        <!-- CMS / PROYECTOS -->
             <div id="cms-section" class="content-section">
                 <div class="section-header">
-                    <h2><i class="fa-solid fa-layer-group"></i> Editor de Páginas</h2>
-                    <select id="select-pagina" class="filter-select">
-                        <option value="home">Home</option>
-                        <option value="sobre-mi">Sobre Mí</option>
-                        <option value="sistemas">Sistemas</option>
-                        <option value="desarrollo">Desarrollo</option>
-                        <option value="bases-datos">Bases de Datos</option>
-                        <option value="proyecto">Proyecto</option>
-                        <option value="contacto">Contacto</option>
-                    </select>
+                    <h2><i class="fa-solid fa-video"></i> Gestor de Proyectos y Videos</h2>
                 </div>
                 
-                <div id="cms-editor" style="padding: 20px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border);">
-                    <div class="loader">Selecciona una página para editar</div>
+                <!-- Formulario para agregar -->
+                <div style="padding: 20px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
+                    <h3 style="color: var(--primary); margin-bottom: 20px;">Subir Nuevo Proyecto</h3>
+                    
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                        <input type="text" id="proy-titulo" placeholder="Título del proyecto" style="flex: 1; min-width: 200px; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 8px;">
+                        <input type="text" id="proy-youtube" placeholder="ID de YouTube (solo el código, ej: dQw4w9WgXcQ)" style="flex: 1; min-width: 250px; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 8px;">
+                        <input type="file" id="proy-imagen" accept="image/*" style="padding: 8px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 8px;">
+                        <button id="btn-save-proyecto" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">💾 Guardar Proyecto</button>
+                    </div>
+                    
+                    <textarea id="proy-descripcion" placeholder="Descripción del proyecto" style="width: 100%; min-height: 80px; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 8px;"></textarea>
                 </div>
 
-                <div style="margin-top: 40px; padding: 20px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border);">
-                    <h3 style="color: var(--primary); margin-bottom: 20px;">
-                        <i class="fa-solid fa-video"></i> Proyectos & Videos de YouTube
-                    </h3>
-                    
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-                        <input type="text" id="proy-titulo" placeholder="Título del proyecto" style="flex: 1; min-width: 200px; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 8px;">
-                        <input type="text" id="proy-youtube" placeholder="ID YouTube (ej: dQw4w9WgXcQ)" style="flex: 1; min-width: 150px; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 8px;">
-                        <input type="file" id="proy-imagen" accept="image/*" style="padding: 8px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 8px;">
-                        <button id="btn-save-proyecto" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;">💾 Guardar Proyecto</button>
+                <!-- Tabla con Filtro de Búsqueda -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="color: var(--text-main);">Lista de Proyectos</h3>
+                    <div class="header-search" style="width: 300px;">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="buscar-proyecto" placeholder="Buscar por título..." style="width: 100%; padding: 10px 12px 10px 38px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main);">
                     </div>
-                    
-                    <textarea id="proy-descripcion" placeholder="Descripción del proyecto" style="width: 100%; min-height: 80px; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 8px; margin-bottom: 15px;"></textarea>
-                    
-                    <div class="table-container">
-                        <table class="admin-table">
-                            <thead>
-                                <tr><th>ID</th><th>Imagen</th><th>Título</th><th>YouTube ID</th><th>Activo</th><th>Acciones</th></tr>
-                            </thead>
-                            <tbody id="tabla-proyectos-cms"></tbody>
-                        </table>
-                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>ID</th><th>Imagen</th><th>Título</th><th>YouTube ID</th><th>Activo</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="tabla-proyectos-cms"></tbody>
+                    </table>
                 </div>
             </div>
 

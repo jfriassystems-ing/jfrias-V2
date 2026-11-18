@@ -256,104 +256,39 @@ async function loadFacturasFact() {
     document.getElementById('fact-total-facturado').innerText = `$${totalFacturado.toFixed(2)}`;
 }
 
-// ========== CMS ==========
-async function cargarEditorPagina(slug) {
-    paginaActualCMS = slug;
-    const editorDiv = document.getElementById('cms-editor');
-    editorDiv.innerHTML = '<div class="loader">Cargando editor...</div>';
-
-    let { data: pagina } = await supabase.from('paginas').select('*').eq('slug', slug).maybeSingle();
-
-    if (!pagina) {
-        const { data: nuevaPagina } = await supabase.from('paginas').insert([{ slug: slug, titulo: slug.toUpperCase() }]).select().single();
-        pagina = nuevaPagina;
-    }
-
-    const { data: secciones } = await supabase.from('secciones').select('*').eq('pagina_id', pagina.id);
-
-    let html = `
-        <div class="form-group" style="margin-bottom:20px;">
-            <label style="display:flex; align-items:center; gap:10px; color:var(--text-main); font-weight:bold;">
-                <input type="checkbox" id="cms-pagina-activa" ${pagina.activa ? 'checked' : ''}> Página activa en el menú
-            </label>
-        </div>
-    `;
-
-    if (secciones && secciones.length > 0) {
-        secciones.forEach(sec => {
-            html += `
-                <div class="form-group" style="margin-bottom:15px; padding:15px; background:var(--bg-dark); border-radius:8px;">
-                    <label style="color:var(--primary); font-weight:600;">${sec.clave} (${sec.tipo})</label>
-                    <div style="display:flex; gap:10px; margin-top:8px;">
-                        ${sec.tipo === 'html' 
-                            ? `<textarea id="cms-input-${sec.id}" style="flex:1; min-height:80px; padding:8px; background:var(--bg-card); border:1px solid var(--border); color:white; border-radius:8px;">${sec.valor || ''}</textarea>`
-                            : `<input type="text" id="cms-input-${sec.id}" value="${sec.valor || ''}" style="flex:1; padding:8px; background:var(--bg-card); border:1px solid var(--border); color:white; border-radius:8px;">`
-                        }
-                        <button onclick="guardarSeccionCMS(${sec.id})" style="background:#3b82f6; border:none; padding:8px 16px; border-radius:8px; color:white; cursor:pointer;">💾</button>
-                    </div>
-                </div>
-            `;
-        });
-    } else {
-        html += '<p style="color:var(--text-muted);">No hay secciones configuradas para esta página.</p>';
-    }
-
-    html += `
-        <div style="margin-top:30px; padding:20px; border:1px dashed var(--primary); border-radius:8px;">
-            <h4 style="color:var(--primary); margin-bottom:15px;">➕ Agregar nueva sección</h4>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <input type="text" id="new-clave" placeholder="Ej: hero_titulo" style="flex:1; min-width:150px; padding:8px; background:var(--bg-dark); border:1px solid var(--border); color:white; border-radius:8px;">
-                <select id="new-tipo" style="padding:8px; background:var(--bg-dark); border:1px solid var(--border); color:white; border-radius:8px;">
-                    <option value="texto">Texto</option>
-                    <option value="html">HTML</option>
-                    <option value="imagen">URL Imagen</option>
-                </select>
-                <button onclick="crearSeccionCMS()" style="background:#10b981; border:none; padding:8px 16px; border-radius:8px; color:white; cursor:pointer;">Crear</button>
-            </div>
-        </div>
-    `;
-
-    editorDiv.innerHTML = html;
-
-    document.getElementById('cms-pagina-activa')?.addEventListener('change', async (e) => {
-        await supabase.from('paginas').update({ activa: e.target.checked }).eq('id', pagina.id);
-        mostrarToast(e.target.checked ? 'Página activada' : 'Página desactivada');
-    });
-}
-
-window.guardarSeccionCMS = async (seccionId) => {
-    const input = document.getElementById(`cms-input-${seccionId}`);
-    if (!input) return;
-    await supabase.from('secciones').update({ valor: input.value }).eq('id', seccionId);
-    mostrarToast('✅ Sección actualizada');
-};
-
-window.crearSeccionCMS = async () => {
-    const clave = document.getElementById('new-clave').value.trim();
-    const tipo = document.getElementById('new-tipo').value;
-    if (!clave) return mostrarToast('Escribe una clave', 'error');
-
-    const { data: pagina } = await supabase.from('paginas').select('id').eq('slug', paginaActualCMS).single();
-    if (!pagina) return;
-
-    await supabase.from('secciones').insert([{ pagina_id: pagina.id, clave, tipo, valor: '' }]);
-    mostrarToast('✅ Sección creada');
-    cargarEditorPagina(paginaActualCMS);
-};
+// ========== CMS (PROYECTOS) ==========
+let proyectosCacheAdmin = [];
 
 async function cargarProyectosCMS() {
     const { data } = await supabase.from('proyectos').select('*').order('id', { ascending: false });
+    proyectosCacheAdmin = data || [];
+    renderizarTablaProyectos();
+}
+
+function renderizarTablaProyectos() {
     const tbody = document.getElementById('tabla-proyectos-cms');
     if (!tbody) return;
+
+    const busqueda = document.getElementById('buscar-proyecto')?.value.toLowerCase() || '';
+    let filtrados = proyectosCacheAdmin;
     
-    tbody.innerHTML = (data || []).map(p => `
+    if (busqueda) {
+        filtrados = filtrados.filter(p => (p.titulo || '').toLowerCase().includes(busqueda));
+    }
+
+    if (filtrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="loader">No hay proyectos registrados.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filtrados.map(p => `
         <tr>
             <td>${p.id}</td>
-            <td>${p.imagen_portada ? `<img src="${p.imagen_portada}" style="width: 50px; border-radius: 4px;">` : '-'}</td>
+            <td>${p.imagen_portada ? `<img src="${p.imagen_portada}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">` : '-'}</td>
             <td>${sanitize(p.titulo)}</td>
-            <td><code>${p.youtube_id || '-'}</code></td>
+            <td><code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">${p.youtube_id || '-'}</code></td>
             <td><input type="checkbox" ${p.activo ? 'checked' : ''} onchange="toggleProyecto(${p.id}, this.checked)"></td>
-            <td><button onclick="eliminarProyecto(${p.id})" style="background:#e74c3c; padding:4px 8px; border:none; border-radius:4px; color:white;">🗑️</button></td>
+            <td><button onclick="eliminarProyecto(${p.id})" style="background:#e74c3c; padding:6px 12px; border:none; border-radius:4px; color:white; cursor:pointer;">🗑️ Eliminar</button></td>
         </tr>
     `).join('');
 }
@@ -372,17 +307,35 @@ async function subirImagen(file) {
 
 document.getElementById('btn-save-proyecto')?.addEventListener('click', async () => {
     const titulo = document.getElementById('proy-titulo').value.trim();
-    const youtube = document.getElementById('proy-youtube').value.trim();
+    let youtube = document.getElementById('proy-youtube').value.trim();
     const descripcion = document.getElementById('proy-descripcion').value.trim();
     const file = document.getElementById('proy-imagen').files[0];
 
     if (!titulo) return mostrarToast('El título es obligatorio', 'error');
 
+    // MAGIA: Si el usuario pega la URL completa, extraemos el ID automáticamente
+    if (youtube.includes('youtube.com') || youtube.includes('youtu.be')) {
+        try {
+            const urlParams = new URLSearchParams(new URL(youtube).search);
+            youtube = urlParams.get('v') || youtube.split('/').pop().split('?')[0];
+        } catch (e) {
+            console.warn('No se pudo extraer el ID, se guardará tal cual.');
+        }
+    }
+
     try {
         let imagenUrl = null;
         if (file) imagenUrl = await subirImagen(file);
 
-        await supabase.from('proyectos').insert([{ titulo, youtube_id: youtube, descripcion, imagen_portada: imagenUrl }]);
+        const { error } = await supabase.from('proyectos').insert([{ 
+            titulo, 
+            youtube_id: youtube, 
+            descripcion, 
+            imagen_portada: imagenUrl,
+            activo: true 
+        }]);
+
+        if (error) throw error;
 
         mostrarToast('✅ Proyecto creado');
         document.getElementById('proy-titulo').value = '';
@@ -391,9 +344,11 @@ document.getElementById('btn-save-proyecto')?.addEventListener('click', async ()
         document.getElementById('proy-imagen').value = '';
         cargarProyectosCMS();
     } catch (err) {
-        mostrarToast('❌ Error al guardar proyecto', 'error');
+        mostrarToast('❌ Error al guardar: ' + err.message, 'error');
     }
 });
+
+document.getElementById('buscar-proyecto')?.addEventListener('input', renderizarTablaProyectos);
 
 window.toggleProyecto = async (id, activo) => {
     await supabase.from('proyectos').update({ activo }).eq('id', id);
@@ -406,6 +361,8 @@ window.eliminarProyecto = async (id) => {
     cargarProyectosCMS();
     mostrarToast('Proyecto eliminado');
 };
+
+// ========== FIN CMS ==========
 
 // ========== ITEMS FACTURA ==========
 function renderItemsFactura() {
